@@ -1,0 +1,146 @@
+//Query: Create 5 books with the following names: C Sharp, Java, Python, PHP, Ruby//
+>>> new_book = Book.objects.create(title="C Sharp", desc="C Sharp 101")
+>>> new_book = Book.objects.create(title="Java", desc="Java 101")
+>>> new_book = Book.objects.create(title="Python", desc="Python 101")
+>>> new_book = Book.objects.create(title="PHP", desc="PHP 101")
+>>> new_book = Book.objects.create(title="Ruby", desc="Ruby 101")
+
+//Query: Create 5 different authors: Jane Austen, Emily Dickinson, Fyodor Dostoevksy, William Shakespeare, Lau Tzu//
+>>> new_book = Book.objects.create(title="PHP", desc="PHP 101")
+>>> new_book = Book.objects.create(title="Ruby", desc="Ruby 101")
+>>> new_author = Author.objects.create(first_name="Jane", last_name="Austen")
+>>> new_author = Author.objects.create(first_name="Emily", last_name="Dickinson")
+>>> new_author = Author.objects.create(first_name="Fyodor", last_name="Dostoevksy")
+>>> new_author = Author.objects.create(first_name="William", last_name="Shakespeare")
+>>> new_author = Author.objects.create(first_name="Lau", last_name="Tzu")
+
+//Add a new text field in the authors table called 'notes'.//
+>>> exit()
+
+//Create and run the migration files to update the table in your database.//
+(djangoPy3Env) Janelles-MacBook-Pro:books_authors JCloud$ python manage.py makemigrations
+You are trying to add a non-nullable field 'note' to author without a default; we can't do that (the database needs something to populate existing rows).
+Please select a fix:
+ 1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+ 2) Quit, and let me add a default in models.py
+Select an option: 1
+Please enter the default value now, as valid Python
+The datetime and django.utils.timezone modules are available, so you can do e.g. timezone.now
+Type 'exit' to exit this prompt
+>>> "added notes"
+Migrations for 'booksAuthors_app':
+  booksAuthors_app/migrations/0002_author_note.py
+    - Add field note to author
+(djangoPy3Env) Janelles-MacBook-Pro:books_authors JCloud$ python manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, auth, booksAuthors_app, contenttypes, sessions
+Running migrations:
+  Applying booksAuthors_app.0002_author_note... OK
+
+(djangoPy3Env) Janelles-MacBook-Pro:books_authors JCloud$ python manage.py shell
+Python 3.7.6 (default, Dec 30 2019, 19:38:36) 
+[Clang 10.0.0 (clang-1000.11.45.5)] on darwin
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>> from booksAuthors_app.models import *
+
+//Query: Change the name of the C Sharp book to C#//
+>>> book_to_update = Book.objects.get(id=1)
+>>> book_to_update.title = "C#"
+>>> book_to_update.desc = "C# 101"
+>>> book_to_update.save()
+
+//Query: Change the first name of the 4th author to Bill//
+>>> author_to_update = Author.objects.get(id=4)
+>>> author_to_update.first_name = "Bill"
+>>> author_to_update.save()
+
+//Query: Assign the first author to the first 2 books//
+>>> this_book = Book.objects.get(id=1)
+>>> this_author = Author.objects.get(id=1)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=2)
+>>> this_author = Author.objects.get(id=1)
+>>> this_author.book.add(this_book)
+
+//Query: Assign the second author to the first 3 books//
+>>> this_book = Book.objects.get(id=1)
+>>> this_author = Author.objects.get(id=2)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=2)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=3)
+>>> this_author.book.add(this_book)
+
+//Query: Assign the third author to the first 4 books//
+>>> this_book = Book.objects.get(id=1)
+>>> this_author = Author.objects.get(id=3)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=2)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=3)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=4)
+>>> this_author.book.add(this_book)
+
+//Query: Assign the fourth author to the first 5 books (or in other words, all the books)//
+
+>>> this_book = Book.objects.get(id=1)
+>>> this_author = Author.objects.get(id=4)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=2)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=3)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=4)
+>>> this_author.book.add(this_book)
+>>> this_book = Book.objects.get(id=5)
+>>> this_author.book.add(this_book)
+
+//Query: Retrieve all the authors for the 3rd book//
+>>> this_book = Book.objects.get(id=3)
+>>> this_book.Authors.all()
+<QuerySet [<Author: Author object (2)>, <Author: Author object (3)>, <Author: Author object (4)>]>
+>>> for Authors in this_book.Authors.all():
+...     print(Authors.first_name)
+... 
+Emily
+Fyodor
+Bill
+
+//Query: Remove the first author of the 3rd book//
+>>> this_book = Book.objects.get(id=3)
+>>> this_author = Author.objects.get(id=2)
+>>> this_author.book.remove(this_book)
+
+//Query: Add the 5th author as one of the authors of the 2nd book//
+>>> this_book = Book.objects.get(id=2)
+>>> this_author = Author.objects.get(id=5)
+>>> this_author.book.add(this_book)
+
+//Query: Find all the books that the 3rd author is part of//
+>>> this_author = Author.objects.get(id=3)
+>>> this_author.book.all()
+<QuerySet [<Book: Book object (1)>, <Book: Book object (2)>, <Book: Book object (3)>, <Book: Book object (4)>]>
+>>> for book in this_author.book.all():
+...     print(book.title)
+... 
+C#
+Java
+Python
+PHP
+
+//Query: Find all the authors that contributed to the 5th book//
+>>> this_book = Book.objects.get(id=5)
+>>> this_book.Authors.all()
+<QuerySet [<Author: Author object (4)>]>
+>>> for Authors in this_book.Authors.all():
+...     print(Authors.first_name)
+... 
+Bill
+
+
+
+
+
+
